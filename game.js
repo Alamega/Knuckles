@@ -1,11 +1,11 @@
 const game = document.getElementById("game");
 const context = game.getContext("2d");
 
-const height = 480; //Высота канваса
-const width = 720; //Ширина канваса
+const GLOBAL_HEIGHT = 480; //Высота канваса
+const GLOBAL_WIDTH = 720; //Ширина канваса
 
-game.height = height;
-game.width = width;
+game.height = GLOBAL_HEIGHT;
+game.width = GLOBAL_WIDTH;
 
 //Картиночки
 const BlocksImages = [];
@@ -22,8 +22,8 @@ var keyW = false;
 var keyA = false;
 var keyS = false;
 var keyD = false;
-var mouseX = width / 2;
-var mouseY = height / 2;
+var mouseX = GLOBAL_WIDTH / 2;
+var mouseY = GLOBAL_HEIGHT / 2;
 
 class Map {
   static All = [
@@ -35,9 +35,11 @@ class Map {
       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-      [1, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     ],
@@ -79,8 +81,8 @@ class Map {
     Hero.y = heroPosY;
 
     //Это чтобы центр карты был равен позиции героя
-    Map.shiftX = Hero.x + Hero.width / 2 - width / 2;
-    Map.shiftY = Hero.y + Hero.height / 2 - height / 2;
+    Map.shiftX = Hero.x + Hero.width / 2 - GLOBAL_WIDTH / 2;
+    Map.shiftY = Hero.y + Hero.height / 2 - GLOBAL_HEIGHT / 2;
   }
 
   static draw() {
@@ -156,6 +158,7 @@ const Hero = new PersonHero(Block.SIZE_X * 5, Block.SIZE_Y * 5, 1, 40, 40, "/ima
 
 class Enemy extends Person {
   static All = [];
+
   constructor(xpos, ypos, moveSpeed, width, height, image, direction) {
     super(xpos, ypos, moveSpeed, width, height, image);
     this.direction = direction;
@@ -219,6 +222,7 @@ class Enemy extends Person {
 
 class Projectile {
   static All = [];
+
   constructor(shooter, endX, endY, width, height, speed) {
     this.shooter = shooter;
     this.startX = this.shooter.x + this.shooter.width / 2;
@@ -231,6 +235,7 @@ class Projectile {
     this.x = this.startX - this.width / 2;
     this.y = this.startY - this.height / 2;
   }
+
   static MoveAll() {
     for (let i = 0; i < this.All.length; i++) {
       let dist = Math.sqrt(Math.pow(Projectile.All[i].endX - Projectile.All[i].startX, 2) + Math.pow(Projectile.All[i].endY - Projectile.All[i].startY, 2));
@@ -288,8 +293,8 @@ document.addEventListener("keyup", (event) => {
 });
 
 game.addEventListener("mousemove", (event) => {
-  mouseX = Math.round((event.offsetX / game.clientWidth) * width);
-  mouseY = Math.round((event.offsetY / game.clientHeight) * height);
+  mouseX = Math.round((event.offsetX / game.clientWidth) * GLOBAL_WIDTH);
+  mouseY = Math.round((event.offsetY / game.clientHeight) * GLOBAL_HEIGHT);
 });
 
 game.addEventListener("click", () => {
@@ -365,19 +370,19 @@ function simpleCollision(el1, el2) {
 }
 
 //Начало игры
-Map.init(0, 3, 3);
+Map.init(0, 5, 5);
 
 //Игровой цикл
-
 setInterval(() => {
   Hero.move();
   Enemy.MoveAll();
   Projectile.MoveAll();
 }, 4);
 
+//Рисовательский цикл
 function Draw() {
   context.fillStyle = "rgb(86,57,35)";
-  context.fillRect(0, 0, width, height);
+  context.fillRect(0, 0, GLOBAL_WIDTH, GLOBAL_HEIGHT);
 
   Map.draw();
   Enemy.draw();
@@ -388,15 +393,16 @@ function Draw() {
   }
 
   //Рисование персонажа
-  context.drawImage(Hero.image, width / 2 - Hero.width / 2, height / 2 - Hero.height / 2, Hero.width, Hero.height);
+  context.drawImage(Hero.image, GLOBAL_WIDTH / 2 - Hero.width / 2, GLOBAL_HEIGHT / 2 - Hero.height / 2, Hero.width, Hero.height);
 
   //Рисование курсора
   context.drawImage(CursorImage, mouseX - 20, mouseY - 20, 40, 40);
 
-  context.fillStyle = "red";
+  context.fillStyle = "white";
   context.font = "32px serif";
-  context.fillText("Убито тараканусов: " + Hero.kills, 220, 50);
+  context.fillText("Убито тараканусов: " + Hero.kills, GLOBAL_WIDTH / 2 - 150, 50);
 
   requestAnimationFrame(Draw);
 }
-Draw();
+
+window.onload = Draw();
