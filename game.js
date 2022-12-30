@@ -1,8 +1,11 @@
 const game = document.getElementById("game");
 const context = game.getContext("2d");
 
-const GLOBAL_HEIGHT = 480; //Высота канваса
-const GLOBAL_WIDTH = 720; //Ширина канваса
+// const GLOBAL_HEIGHT = 480; //Высота канваса
+// const GLOBAL_WIDTH = 720; //Ширина канваса
+
+const GLOBAL_HEIGHT = game.clientHeight / 1.2; //Высота канваса
+const GLOBAL_WIDTH = game.clientWidth / 1.2; //Ширина канваса
 
 game.height = GLOBAL_HEIGHT;
 game.width = GLOBAL_WIDTH;
@@ -379,8 +382,22 @@ setInterval(() => {
   Projectile.MoveAll();
 }, 4);
 
+var frames = 0;
+var fps = 0;
+var startTime = performance.now();
+setInterval(() => {
+  fps = Math.round((frames / (performance.now() - startTime)) * 1000);
+}, 1000);
+
+function showFps() {
+  context.fillStyle = "white";
+  context.font = "16px serif";
+  context.fillText("fps: " + fps, 20, GLOBAL_HEIGHT - 40);
+}
+
 //Рисовательский цикл
 function Draw() {
+  frames++;
   context.fillStyle = "rgb(86,57,35)";
   context.fillRect(0, 0, GLOBAL_WIDTH, GLOBAL_HEIGHT);
 
@@ -398,9 +415,7 @@ function Draw() {
   //Рисование курсора
   context.drawImage(CursorImage, mouseX - 20, mouseY - 20, 40, 40);
 
-  context.fillStyle = "white";
-  context.font = "32px serif";
-  context.fillText("Убито тараканусов: " + Hero.kills, GLOBAL_WIDTH / 2 - 150, 50);
+  showFps();
 
   requestAnimationFrame(Draw);
 }
